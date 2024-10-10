@@ -1,6 +1,6 @@
 import {TracksComponent} from "./Tracks/TracksComponent.js";
 import {liba} from "../../../../shared/liba.js";
-import {deletePlaylist} from "../../../../data/data.js";
+import {deletePlaylist} from "../../../../data/player-data.js";
 
 export function PlaylistComponent(inputPlaylist) {
     const classes = ["playlist"];
@@ -9,19 +9,43 @@ export function PlaylistComponent(inputPlaylist) {
         classes.push("active");
     }
 
-    const element = liba.create("div", classes);
+    const element = liba.create("article", classes);
+    const playlistInfo = liba.create("div", ["playlist-info"]);
 
-    // todo: split into PlaylistTitleComponent
-    const playlistTitleElement = document.createElement("h2");
-    playlistTitleElement.append(inputPlaylist.title);
+    const playlistImg = liba.create("img", ["playlist-cover-image"]);
+    playlistImg.src = inputPlaylist.playlistInfo.coverImgUrl;
+    playlistImg.alt = "cover";
 
-    const deleteButtonElement = liba.create("button");
-    deleteButtonElement.append("❌");
-    deleteButtonElement.addEventListener("click", () => {
-        deletePlaylist(inputPlaylist.id);
+    const playlistHeader = liba.create("div");
+
+    const title = liba.create("h2", ["title"]);
+    title.append(inputPlaylist.playlistInfo.title);
+
+    const count = liba.create("div", ["tracks-count"]);
+    count.append(`${inputPlaylist.tracks.length} tracks`);
+
+    const buttons = liba.create("div", ["buttons-container"]);
+    const editButton = liba.create("button");
+    const deleteButton = liba.create("button");
+
+    const editImg = liba.create("img", ["button-icons"]);
+    editImg.src = "img/icons/edit.svg";
+    editButton.append(editImg);
+
+    const deleteImg = liba.create("img", ["button-icons"]);
+    deleteImg.src = "img/icons/basket.svg";
+    deleteButton.append(deleteImg);
+
+    buttons.append(editButton, deleteButton);
+
+    playlistHeader.append(title, count);
+    playlistInfo.append(playlistImg, playlistHeader, buttons);
+
+    deleteButton.addEventListener("click", () => {
+        deletePlaylist(inputPlaylist.playlistInfo.id);
     });
 
-    element.append(deleteButtonElement, playlistTitleElement);
+    element.append(playlistInfo);
 
     element.append(TracksComponent(inputPlaylist.tracks));
 
